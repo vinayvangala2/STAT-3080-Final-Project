@@ -1,0 +1,71 @@
+---
+title: "Project Part 3" 
+fontsize: 12pt
+geometry: margin=1in
+urlcolor: black
+output: pdf_document
+header-includes:
+- \usepackage{setspace}
+- \onehalfspacing
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, highlight=FALSE)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+flucases201920 <- read.csv("C:/Users/vinay/Desktop/STAT 3080/NCIRD 2019-2020 Flu Cases.csv", header = TRUE)
+flucases202021 <- read.csv("C:/Users/vinay/Desktop/STAT 3080/NCIRD 2020-2021 Flu Cases.csv", header = TRUE)
+fludeaths <- read.csv("C:/Users/vinay/Desktop/STAT 3080/NCHS Flu Deaths.csv", header = TRUE)
+fludata <- rbind(flucases201920, flucases202021)
+fludata <- merge(fludata, fludeaths, by = "Week", all = TRUE)
+fludata <- subset(fludata, select = -c(AREA:PERCENT.PIC, NUM.PNEUMONIA.DEATHS, PERCENT.COMPLETE))
+Flu.Season <- c(201920,201920,201920,201920,201920, 201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920, "off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off", 202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021)
+fludata <- cbind(fludata, Flu.Season)
+```
+
+## Introduction and Research Question
+  COVID-19 is a deadly respiratory virus that is passed through human-to-human interaction in which respiratory droplets pass from infected to uninfected persons through sneezing, coughing, or simply talking (Reference 4, World Health Organization). When it was declared a pandemic in March 2020, countries across the world implemented measures such as social distancing and mask wearing. While COVID-19 still continued strong through 2020 and 2021, many researchers and health experts expect(ed) these measures to have a strong impact on reducing the season flu numbers. Therefore, my research question is the following: "have COVID-19 mitigation measures had an impact on reducing the seasonal flu case and death numbers of the 2020-2021 flu season, in comparison to the 2019-2020 flu season?"
+  
+## Description of Data
+  Three data sets were combined to create the final data set used in this project. The first two data sets came from the Influenza Division of the CDC (Reference 2, CDC). Each of those data sets featured the number and percentage of positive influenza A and B tests in United States clinical and public health centers. The number of positives was combined into one column during the data cleaning step. Two data sets were necessary for the same variables as the they each covered a different flu season (2019-2020, and 2020-2021). These two data sets were chosen in order to determine if the change in case numbers is statistically significant. The data in these sets was determined by the CDC through a weekly reporting format in which the Influenza Division of the CDC collected the positive flu case numbers from "approximately 100 public heath and over 300 clinical laboratories located throughout all 50 states" (Reference 3, CDC). 
+  
+  The third and final data set used in the combination of data came from the National Center for Health Statistics, a division of the CDC (Reference 1, CDC). While it contains many other variables which were removed in the data cleaning step, the importance of this data set is that it contains the number of influenza attributed deaths by week in the United States for the 2019-2020 and 2020-2021 flu seasons. This set was chosen to determine if the change in deaths from the non-COVID to the COVID flu season is statistically significant. The data in this set was determined by the NCHS by "collect[ing] death certificate data from state vital statistics offices for all deaths occurring in the United States" (Reference 3, CDC). 
+  
+  As explained in the last two paragraphs, the data collection methods show that this data is a population. The data is meant to be a full count of all flu cases and deaths in the entire United States. However, this brings up one obvious issue with the data, and that is treating it like a population even though there will be missing data. Not all flu cases go tested, and not all flu deaths necessarily get diagnosed. However, this is the established number used to represent the entire United States, and hence will be treated as such. The final data set, created through a combination of the data described in the previous two paragraphs, contains 12 columns: Week (in the format YYYYWW, ex. 201940 is the 40th week of 2019), Total.A (number of positive influenza A tests), Total.B (number of positive influenza B tests), Percent.Positive.A (percentage of positive influenza A tests), Percent.Positive.B (percentage of positive influenza B tests), Total Tested (total number of tested individuals), X Positive (sum of percent positive A and percent positive B), Total.Cases (total flu cases), NUM.INFLUENZA.DEATHS (number of influenza deaths), NUM.COVID19.DEATHS (number of COVID-19 deaths), TOTAL.PIC (total number of pneumonia, influenza, and COVID-19 deaths), TOTAL.DEATHS (total deaths of all causes), and Flu.Season (name of flu season). Again, as stated earlier, these are all population data, and they are organized using the first column, Week. Also as stated earlier, the data primarily used to answer this research question (Total.Cases and NUM.INFLUENZA.DEATHS) is appropriate as it will be used to directly show changes in case and death numbers.
+  
+  The one potential issue in this data is related to the typical range of flu season. Flu season is loosely defined by the CDC, and can be dependent on the trends for that specific year. However, it is typically the fall and winter, running from ~October to ~March, with it occasionally stretching into May (Reference 5, CDC). While data exists for all of October to May of the 2019-2020 flu season, the fact that it is currently April 2021 makes it impossible to have data past March for the 2020-2021 flu season. Fortunately, May outbreaks are incredibly rare, so this study be limiting comparisons of the two flu seasons to mid-September through the end of March of each season during final hypothesis testing.
+
+## Numerical and Graphical Data Summary
+
+```{r}
+library(tidyverse)
+fludata2 <- fludata[which(fludata$Flu.Season == 201920 | fludata$Flu.Season == 202021),]
+ggplot(fludata2, aes(x = Flu.Season, y = Total.Cases)) + stat_summary(fun = mean, geom = "bar") + 
+labs(title = "Mean Case Numbers per Week per Flu Season (Oct-Mar)", x = "Flu Season", y = "Case Numbers") + 
+stat_summary(fun=mean, geom="text", 
+aes(label=..y..), vjust=1, 
+position=position_dodge(0.9), color="Red")
+```
+  This is the first graphical summary, which also contains a display of the numerical summary simultaneously. This graphical summary, as can be easily seen in the graph, shows the mean weekly case numbers for each flu season (defined as October through March). The image alone shows the importance of the data: in comparison to the 2019-20 weekly flu numbers, the 2020-21 weekly case numbers are almost nonexistent. The numbers back this up, showing a ~10000 to ~65 difference in the mean cases per week. It shows that this change is likely to be of statistical significance, and we will like conclude that social distancing and mask wearing efforts have had a positive impact on reducing flu cases.
+
+```{r}
+fludata2 <- fludata[which(fludata$Flu.Season == 201920 | fludata$Flu.Season == 202021),]
+ggplot(fludata2, aes(x = Flu.Season, y = NUM.INFLUENZA.DEATHS)) + stat_summary(fun= mean, geom = "bar") + 
+labs(title = "Mean Flu Deaths per Week per Flu Season (Oct-Mar)", 
+x = "Flu Season", y = "Mean Deaths") + 
+stat_summary(fun=mean, geom="text", 
+aes(label=..y..), vjust=1, 
+position=position_dodge(0.9), color="red")
+```
+  Like the previous graph, this bar graph is also both a graphical and numerical summary. This time, however, the graph shows mean deaths per week in each of the two flu seasons. Again, the image of the graph alone shows a striking difference in the two groups, where the 2020-21 season mean weekly deaths are nonexistent compared to those of the 2019-20 season. This is backed up by the numerical summary, showing a ~280 to ~22 difference in average flu deaths per week. This bar graph leads us to believe that hypothesis testing will come to a conclusion that there has been a statistically significant decrease in flu deaths per week. 
+  
+## Conclusion
+  In conclusion, the population data regarding influenza in the 2019-20 and 2020-21 seasons shows that it is likely that the change in case and death numbers between the two seasons is of a statistically significant decrease. 
+
+## References
+1. <https://gis.cdc.gov/grasp/fluview/mortality.html.>
+2. <https://www.cdc.gov/flu/weekly/index.htm>
+3. <https://www.cdc.gov/flu/weekly/overview.htm>
+4. <https://www.who.int/health-topics/coronavirus#tab=tab_1>
+5. <https://www.cdc.gov/flu/about/season/flu-season.htm#:~:text=In%20the%20United%20States%2C%20flu%20season%20occurs%20in%20the%20fall,last%20as%20late%20as%20May.>

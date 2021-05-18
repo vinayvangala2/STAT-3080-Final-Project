@@ -1,0 +1,23 @@
+---
+title: "Project Part 1" 
+fontsize: 12pt
+geometry: margin=1in
+urlcolor: black
+output: pdf_document
+header-includes:
+- \usepackage{setspace}
+- \onehalfspacing
+---
+
+## Project Part 1
+### Topic of Interest
+  No story from 2020 was greater than the start of the COVID-19 epidemic. Ravaging communities, taking lives, and instilling fear in all, COVID-19 has forced the world into a "new normal". However, there is hope, as vaccine distribution is ramping up. Looking back, we have likely passed the peak of the pandemic, and while it will be remembered as a dark time, COVID has provided us with a lot of data, and analysis of it can point our the weaknesses in our pandemic response so we are prepared for any emergency that could strike society again. Therefore, my topic of interest is COVID-19.
+  
+### Research Question 1
+  My first research question is the following: are the testing numbers statistically significantly lower and the case numbers statistically significantly higher for the Hispanic population in Maryland and Illinois? For this study, I would like to look at Maryland and Illinois, since Maryland is a moderate Republican state and Illinois is a moderate Democratic state. This would theoretically eliminate political learning as much as possible. I would compare the testing and case numbers for the Hispanic populations in both states to the same numbers for all other races. All the data would also be standardized to the percentage of population of that race, since obviously Hispanics are not the plurality or majority. This primary data is easily available on the state health websites.
+  
+### Research Question 2
+  My second research question is the following: has COVID-19 statistically significantly reduced influenza rates in the United States? In this case, I will be comparing the influenza rates in the US from this year to past years to see if the decrease is statistically significant. Most people agree that COVID measures should have a positive impact on the influenza rates, as masks and social distancing would theoretically lower the rates of the less contagious seasonal flu. While I would not be analyzing COVID-19 data directly, the reduction in influenza rates is a welcome benefit of social distancing, so I feel that it is very interrelated with COVID-19/
+
+### Research Question 3
+  My final research question is this: has there been a statistically significant increase in the following three Google searches: "stocks," "pregnancy," and "sourdough." The pandemic has created an obvious increase in the purchase of stocks, as people at home have taken advantage of the market drops and r/WallStreetBets. Furthermore, people have used their time at home to make a lot of bread, and theoretically babies. Therefore, I would like to look at Google Trends to see if there is a statistically significant increase in these searches. I don't anticipate this analysis to be difficult, so I could expand the analysis to include mroe search trends. 
