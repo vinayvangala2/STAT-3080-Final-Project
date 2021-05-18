@@ -1,0 +1,76 @@
+---
+title: "Project Part 5" 
+fontsize: 12pt
+geometry: margin=1in
+urlcolor: black
+output: pdf_document
+header-includes:
+- \usepackage{setspace}
+- \onehalfspacing
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, highlight=FALSE)
+```
+
+```{r, echo=FALSE}
+library(ggplot2)
+flucases201920 <- read.csv("C:/Users/vinay/Desktop/STAT 3080/NCIRD 2019-2020 Flu Cases.csv", header = TRUE)
+flucases202021 <- read.csv("C:/Users/vinay/Desktop/STAT 3080/NCIRD 2020-2021 Flu Cases.csv", header = TRUE)
+fludeaths <- read.csv("C:/Users/vinay/Desktop/STAT 3080/NCHS Flu Deaths.csv", header = TRUE)
+fludata <- rbind(flucases201920, flucases202021)
+fludata <- merge(fludata, fludeaths, by = "Week", all = TRUE)
+fludata <- subset(fludata, select = -c(AREA:PERCENT.PIC, NUM.PNEUMONIA.DEATHS, PERCENT.COMPLETE))
+Flu.Season <- c(201920,201920,201920,201920,201920, 201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920,201920, "off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off","off", 202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021,202021)
+fludata <- cbind(fludata, Flu.Season)
+```
+### Background
+  For my project, I am tackling the following research question: have COVID-19 mitigation measures had an impact on reducing the seasonal flu case and death numbers of the United States 2020-2021 flu season, in comparison to the United States 2019-2020 flu season? Flu season is defined as week 1 of October through week 1 of March for this study (no real definition exists, Ref 5).
+  Three primary datasets were combined to create the dataset used in this project. The first two (from the Influenza Division of the CDC) featured the number and percentage of positive influenza A and B tests in United States clinical and public health centers by week in the 2019-2020 and 2020-2021 flu seasons respectively (Reference 2, CDC). The number of positives was combined into one column during the data cleaning step. The third and final data set, from the National Center for Health Statistics, was used for it's data on the number of flu deaths per week in both the 2019-2020 and 2020-2021 US flu seasons (Reference 1, CDC).
+  The case data is appropriate for this question because it allows me to see if US case counts have decreased from 2019-2020 (non-COVID) to 2020-20201(with COVID-mitigation measures). For the same reason, the death data is also appropriate, as it allows me to test if the US death counts have decreased.
+
+### Choice of Hypothesis Test
+  To answer my research questions, I decided to run a paired randomization test, with the corresponding weeks in each flu season being paired. The paired randomization test is a nonparametric, quantitative test used to test quantitative assumptions about a parameter of the population when you cannot make any assumptions about the underlying population. This is appropriate here, as I am testing a quantitative parameter (mean), without knowing the mean or normality of the underlying population. To run this test, I am treating my population of differences in cases between the years as a representative sample of a bigger population (that population being flu case and death differences between a pandemic year and a non-pandemic year), and testing to see if the mean of differences (2020-2021 minus 2019-2020) is significantly less than 0, as this indicates a significant decrease from the expected change of zero. This sample meets the first assumption of the paired randomization test, as it is representative of changing flu cases and deaths between pandemic and non-pandemic years. It also meets the second assumption, that the population has no heavy tails. This can be seen in the histogram below:
+
+```{r, fig.width= 4, fig.height =2.5}
+precovidflucases <- fludata[1:24, 8]
+duringcovidflucases <- fludata[53:76, 8] 
+seasoncasesdiffs <- duringcovidflucases - precovidflucases
+precovidfludeaths <- fludata[1:24, 9]
+duringcovidfludeaths <- fludata[53:76, 9]
+seasondeathsdiffs <- duringcovidfludeaths - precovidfludeaths
+hist(seasondeathsdiffs, breaks = 3, main = "Death Diffs")
+```
+```{r, fig.width= 4, fig.height =2.5}
+hist(seasoncasesdiffs, breaks=5, main ="Cases Diffs")
+```
+  Finally, I am testing the following two hypotheses, for both cases differences and deaths differences:
+  Ho: mu = 0
+  Ha: mu < 0
+
+### Testing and Results
+```{r}
+seasoncasesdiffs_mean <- mean(seasoncasesdiffs)
+boot_means_cases <- replicate(10000, mean(sample(seasoncasesdiffs, 
+replace=T)))
+boot_means_cases_null <- boot_means_cases - mean(boot_means_cases)
+pcases <- sum(boot_means_cases_null <= seasoncasesdiffs_mean)/10000
+seasondeathsdiffs_mean <- mean(seasondeathsdiffs)
+boot_means_deaths <- replicate(10000, mean(sample(seasondeathsdiffs, 
+replace=T)))
+boot_means_deaths_null <- boot_means_deaths - mean(boot_means_deaths)
+pdeaths <- sum(boot_means_deaths_null <= seasondeathsdiffs_mean)/10000
+
+data.frame(pvaluecases = pcases, pvaluedeaths = pdeaths)
+```
+ As seen above, the results of my hypothesis test show that the p-value for both cases and deaths is 0. Statistically, this means we can reject both of our null hypotheses (since alpha is 0.05)that there is no difference in the average US flu cases and deaths from 2019-2020 to 2020-2021. Therefore, we can conclude that there was a statistically significant decrease in both flu case and flu death numbers in the United States from the 2019-2020 flu season to the 2020-2021 flu season. In layman terms, this means that we are very certain that COVID-19 mitigation measures reduced flu cases and deaths from 2019-2020 to 2020-2021. Generalizing this conclusion further, in the unfortunate event of a further pandemic, it is likely that flu cases would almost disappear, assuming mitigation methods are in place and the transmission rate of the seasonal flu doesn't drastically increase by then.
+
+\newpage
+
+## References
+1. <https://gis.cdc.gov/grasp/fluview/mortality.html.>
+2. <https://www.cdc.gov/flu/weekly/index.htm>
+3. <https://www.cdc.gov/flu/weekly/overview.htm>
+4. <https://www.who.int/health-topics/coronavirus#tab=tab_1>
+5. <https://www.cdc.gov/flu/about/season/flu-season.htm#:~:text=In%20the%20United%20States%2C%20flu%20season%20occurs%20in%20the%20fall,last%20as%20late%20as%20May.>
+6. <https://www.youtube.com/watch?v=Jmm49I5c4nw>
